@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,14 +21,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+
+load_dotenv()
+ENV = os.environ.get('ENV')
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*l#%!t5h(xu8_su$$)^l!hsca7)d68b!sr^j4vr!_)18%(4k-i'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', default='qkl+xdr8apf-&x(mi7)dwt^-q77aji#j*d#02-5usa32r9!y'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False if ENV == "PROD" else True
 
-ALLOWED_HOSTS = []
 
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
 # Application definition
 
@@ -37,6 +44,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # External apps
+    'bootstrap5',
+
+    # Local apps
+    'core',
+    'core.backend',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +68,7 @@ ROOT_URLCONF = 'CoreRoot.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS':  [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,8 +81,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'CoreRoot.wsgi.application'
 
+WSGI_APPLICATION = 'CoreRoot.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -76,11 +90,11 @@ WSGI_APPLICATION = 'CoreRoot.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'landingdb',
-        'USER': 'managment',
-        'PASSWORD': '1qaz2wsx',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DATABASE_NAME', 'coredb'),
+        'USER': os.getenv('DATABASE_USER', 'core'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'wCh29&HE&T83'),
+        'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
+        'PORT': os.getenv('DATABASE_PORT', '5432'),
     }
 }
 
@@ -114,7 +128,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 
 STATIC_URL = '/static/'

@@ -131,3 +131,6 @@ dmypy.json
 #Static
 media_store/
 static_store/
+
+#Task
+task_to_do.txt
